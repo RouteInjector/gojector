@@ -1,28 +1,47 @@
 package routeinjector
 
+import (
+	"github.com/RouteInjector/gojector/infrastructure/conf"
+	"github.com/op/go-logging"
+	"github.com/RouteInjector/gojector/server"
+	"github.com/RouteInjector/gojector/model"
+	"github.com/RouteInjector/gojector/route"
+)
+
+var glog = logging.MustGetLogger("RouteInjector")
+
 type RouteInjector struct {
-	Models []Model
+	Config  *conf.Configuration
+	Models  []model.Model
+	Routes  []route.Route
+	server  *server.Server
+	started bool
 }
 
-type Model struct {
-	Name      string  // Name of the model
-	Plural    string  // Plural of the model
-	ID        string  // Identifier of the model in the db
-	Get       bool    // Is GET (retrieve one instance) method enabled
-	Put       bool    // Is PUT (update a instance) method enabled
-	Post      bool    // Is POST (add a new instance) method enabled
-	Delete    bool    // Is DELETE (delete one instance) method enabled
-	Search    bool    // Is SEARCH (retrieve a list of instances matching an expression) method enabled
-	Validate  bool    // Is VALIDATE (check the consistency of all instances of the model) method enabled
-	Import    bool    // Is IMPORT (import from csv,json) method enabled
-	Export    bool    // Is EXPORT (export to csv,json) method enabled
-	Aggregate bool    // Is AGGREGATE (retrive an aggragated list of instances) method enabled
-	Routes    []Route // List of additional routes for this model
+func NewRouteInjector(config *conf.Configuration) *RouteInjector {
+	glog.Info("      __________               __           ")
+	glog.Info("      \\______   \\ ____  __ ___/  |_  ____   ")
+	glog.Info("       |       _//  _ \\|  |  \\   __\\/ __ \\  ")
+	glog.Info("       |    |   (  <_> )  |  /|  | \\  ___/  ")
+	glog.Info("       |____|_  /\\____/|____/ |__|  \\___  > ")
+	glog.Info("              \\/                        \\/  ")
+	glog.Info(" .___            __               __                  ")
+	glog.Info(" |   | ____     |__| ____   _____/  |_  ___________   ")
+	glog.Info(" |   |/    \\    |  |/ __ \\_/ ___\\   __\\/  _ \\_  __ \\  ")
+	glog.Info(" |   |   |  \\   |  \\  ___/\\  \\___|  | (  <_> )  | \\/  ")
+	glog.Info(" |___|___|  /\\__|  |\\___  >\\___  >__|  \\____/|__|     ")
+	glog.Info("          \\/\\______|    \\/     \\/                     ")
+	glog.Info("\n")
+	r := &RouteInjector{}
+	r.Config = config
+	r.server = server.NewServer(r.Config)
+	return r
 }
 
-// Route provides the definition of a URL route
-type Route struct {
-	Path    string            // URL path where the route is map
-	Method  string            // HTTP method the route uses
-	Handler httprouter.Handle // Handler for the route
+func (r *RouteInjector) Start() {
+	glog.Debug("Starting RouteInjector instance")
+	r.server.InjectModels(r.Models)
+	r.server.InjectRoutes(r.Routes)
+	r.server.Start()
+	r.started = true
 }
