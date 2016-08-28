@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"net/http"
 	"strings"
-	"github.com/RouteInjector/gojector/model"
 	"github.com/RouteInjector/gojector/route"
+	"github.com/RouteInjector/gojector/infrastructure/mongo"
 )
 
 var glog = logging.MustGetLogger("server")
@@ -34,9 +34,9 @@ func (s *Server) version() {
 	})
 }
 
-func (s *Server) InjectModels(models []model.Model) {
-	for _, model := range models {
-		s.router.GET("/" + strings.ToLower(model.Name), test(model.Name))
+func (s *Server) InjectModels(wrappers []mongo.ModelWrapper) {
+	for _, wrap := range wrappers {
+		s.router.GET("/" + strings.ToLower(wrap.Model.Name), test(wrap.Model.Name))
 	}
 }
 

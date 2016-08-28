@@ -22,4 +22,3 @@ type Model struct {
 type Schema interface {
 
 }
-

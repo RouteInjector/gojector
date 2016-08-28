@@ -15,7 +15,12 @@ type Person struct {
 }
 
 func main() {
-	conf := &conf.Configuration{}
+	conf := &conf.Configuration{
+		Database: &conf.Database{
+			Endpoint: "localhost:27017",
+			Name:"gojector",
+		},
+	}
 	conf.Auth = false
 	conf.Bind = 40000
 
@@ -28,13 +33,13 @@ func main() {
 	route := route.Route{
 		Method: "GET",
 		Path: "/taka",
-		Handler: func(c *gin.Context){
+		Handler: func(c *gin.Context) {
 			c.String(http.StatusOK, "Ok, it is working")
 		},
 	}
 
 	injector := routeinjector.NewRouteInjector(conf)
-	injector.AddModel(personModel)
+	injector.AddModel(&personModel)
 	injector.AddRoute(route)
 	injector.Start()
 }
