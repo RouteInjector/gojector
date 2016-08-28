@@ -27,7 +27,9 @@ func main() {
 	personModel := model.Model{
 		Name: "Person",
 		Plural: "Persons",
+		ID: "name",
 		Schema: Person{},
+		Get: true,
 	}
 
 	route := route.Route{

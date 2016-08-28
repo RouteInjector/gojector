@@ -6,9 +6,7 @@ import (
 	"github.com/RouteInjector/gojector/infrastructure/conf"
 	"strconv"
 	"net/http"
-	"strings"
 	"github.com/RouteInjector/gojector/route"
-	"github.com/RouteInjector/gojector/infrastructure/mongo"
 )
 
 var glog = logging.MustGetLogger("server")
@@ -34,10 +32,20 @@ func (s *Server) version() {
 	})
 }
 
-func (s *Server) InjectModels(wrappers []mongo.ModelWrapper) {
-	for _, wrap := range wrappers {
-		s.router.GET("/" + strings.ToLower(wrap.Model.Name), test(wrap.Model.Name))
-	}
+func (s *Server) GET(path string, handler gin.HandlerFunc){
+	s.router.GET(path, handler)
+}
+
+func (s *Server) POST(path string, handler gin.HandlerFunc){
+	s.router.POST(path, handler)
+}
+
+func (s *Server) PUT(path string, handler gin.HandlerFunc){
+	s.router.PUT(path, handler)
+}
+
+func (s *Server) DELETE(path string, handler gin.HandlerFunc){
+	s.router.DELETE(path, handler)
 }
 
 func (s *Server) InjectRoutes(routes []route.Route) {
@@ -48,10 +56,4 @@ func (s *Server) InjectRoutes(routes []route.Route) {
 
 func (s *Server) Start() {
 	s.router.Run(":" + strconv.Itoa(s.Port))
-}
-
-func test(modelName string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.String(http.StatusOK, modelName)
-	}
 }

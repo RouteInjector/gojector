@@ -5,8 +5,9 @@ import (
 	"github.com/RouteInjector/gojector/model"
 	"gopkg.in/mgo.v2/bson"
 	"github.com/RouteInjector/gojector/infrastructure/conf"
+	"fmt"
+	"strings"
 )
-
 
 type MongoHandler struct {
 	Session *mgo.Session  // MongoDB Session
@@ -15,7 +16,9 @@ type MongoHandler struct {
 
 func NewMongoHandler(conf *conf.Database) *MongoHandler {
 	mHandler := &MongoHandler{}
+	mgo.SetDebug(true)
 	session, err := mgo.Dial(conf.Endpoint)
+	session.SetMode(mgo.Monotonic, true)
 	if err != nil {
 		panic(err)
 	}
@@ -24,7 +27,7 @@ func NewMongoHandler(conf *conf.Database) *MongoHandler {
 	return mHandler
 }
 
-func (m *MongoHandler) StopDatabase(){
+func (m *MongoHandler) StopDatabase() {
 	m.Session.Close();
 }
 
@@ -36,13 +39,19 @@ type ModelWrapper struct {
 func (mhandler MongoHandler) WrapModel(model *model.Model) *ModelWrapper {
 	w := &ModelWrapper{
 		Model: model,
-		collection: mhandler.Db.C(model.Name),
+		collection: mhandler.Db.C(strings.ToLower(model.Name)),
 	}
 	return w
 }
 
+func (w *ModelWrapper) Insert(data interface{}) (err error) {
+	return w.collection.Insert(data)
+}
+
 func (w *ModelWrapper) FindOne(id interface{}) (doc interface{}, err error) {
+	fmt.Println("FindOne -> " + w.Model.Name + " -> " + w.Model.ID + " -> " + id.(string))
 	err = w.collection.Find(bson.M{w.Model.ID:id}).One(&doc)
+	fmt.Println(doc)
 	return doc, err
 }
 
