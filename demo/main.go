@@ -11,7 +11,7 @@ import (
 
 type Person struct {
 	model.Schema
-	Name string
+	Name string `json:"name",bson:"name"`
 }
 
 func main() {
@@ -30,6 +30,7 @@ func main() {
 		ID: "name",
 		Schema: Person{},
 		Get: true,
+		Post:true,
 	}
 
 	route := route.Route{

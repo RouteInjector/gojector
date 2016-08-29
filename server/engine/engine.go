@@ -26,5 +26,8 @@ func (e *Engine) CreateModelsREST(models []mongo.ModelWrapper) {
 		if m.Model.Get {
 			e.CreateGet(m)
 		}
+		if m.Model.Post {
+			e.CreatePost(m)
+		}
 	}
 }

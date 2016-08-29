@@ -31,5 +31,4 @@ func (m *Model) GetPluralPathName() string {
 }
 
 type Schema interface {
-
 }
