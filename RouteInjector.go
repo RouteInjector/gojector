@@ -45,7 +45,7 @@ func NewRouteInjector(config *conf.Configuration) *RouteInjector {
 
 func (r *RouteInjector) Start() {
 	glog.Debug("Starting RouteInjector instance")
-	r.engine.CreateModelsREST(r.Models)
+	r.engine.InjectModels(r.Models)
 	r.server.InjectRoutes(r.Routes)
 	r.server.Start()
 	r.started = true

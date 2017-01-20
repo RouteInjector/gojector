@@ -17,7 +17,7 @@ func NewEngine(server *server.Server) (*Engine) {
 	}
 }
 
-func (e *Engine) CreateModelsREST(models []mongo.ModelWrapper) {
+func (e *Engine) InjectModels(models []mongo.ModelWrapper) {
 	e.models = models
 	fmt.Println("CreateModelsREST")
 	fmt.Println(e.models)
